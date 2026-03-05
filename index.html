@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Trend Studio</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&family=DM+Sans:opsz,wght@9..40,400;9..40,500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0a0a;--s1:#111;--s2:#1a1a1a;--bd:#222;--ac:#e8ff4a;--red:#ff4a6e;--tx:#f0f0f0;--mu:#555;--m2:#888;--xb:#1d9bf0}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{background:var(--bg);color:var(--tx);font-family:'DM Sans',sans-serif;min-height:100vh}
+header{padding:15px 18px 11px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:99;background:rgba(10,10,10,.96);backdrop-filter:blur(10px)}
+.logo{font-family:'Bebas Neue',sans-serif;font-size:1.55rem;letter-spacing:.05em}
+.logo b{color:var(--ac)}
+.badge{display:flex;align-items:center;gap:5px;font-family:'DM Mono',monospace;font-size:.58rem;color:var(--red);letter-spacing:.1em;text-transform:uppercase}
+.dot{width:6px;height:6px;background:var(--red);border-radius:50%;animation:pulse 1.5s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.6)}}
+.tabs{display:flex;padding:0 14px;border-bottom:1px solid var(--bd);overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{font-family:'DM Mono',monospace;font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;color:var(--m2);padding:11px 13px 9px;cursor:pointer;white-space:nowrap;border-bottom:2px solid transparent;transition:all .2s;background:none;border-top:none;border-left:none;border-right:none}
+.tab.on{color:var(--ac);border-bottom-color:var(--ac)}
+.tab:hover:not(.on){color:var(--tx)}
+.layout{display:flex;flex-direction:column}
+.news-panel{padding:13px 15px}
+.ph{display:flex;align-items:center;margin-bottom:11px}
+.plabel{font-family:'DM Mono',monospace;font-size:.56rem;letter-spacing:.14em;text-transform:uppercase;color:var(--mu);flex:1}
+.rbtn{background:none;border:1px solid var(--bd);color:var(--m2);padding:4px 9px;border-radius:4px;font-family:'DM Mono',monospace;font-size:.56rem;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:4px}
+.rbtn:hover{border-color:var(--ac);color:var(--ac)}
+.rbtn.spin svg{animation:rot .7s linear infinite}
+@keyframes rot{to{transform:rotate(360deg)}}
+.grid{display:flex;flex-direction:column;gap:7px}
+.card{background:var(--s1);border:1px solid var(--bd);border-radius:9px;padding:12px 14px;cursor:pointer;transition:all .18s;position:relative;overflow:hidden}
+.card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--mu);transition:background .2s}
+.card:hover,.card.on{border-color:var(--ac);background:var(--s2)}
+.card.on::before,.card:hover::before{background:var(--ac)}
+.cmeta{display:flex;align-items:center;gap:7px;margin-bottom:5px}
+.ctag{font-family:'DM Mono',monospace;font-size:.5rem;letter-spacing:.1em;text-transform:uppercase;padding:2px 6px;border-radius:3px;background:var(--s2);color:var(--m2)}
+.card.on .ctag{background:rgba(232,255,74,.1);color:var(--ac)}
+.cage{font-family:'DM Mono',monospace;font-size:.56rem;color:var(--m2);margin-left:auto}
+.ctitle{font-size:.88rem;font-weight:500;line-height:1.38}
+.csrc{font-size:.68rem;color:var(--m2);margin-top:4px;display:flex;align-items:center;gap:7px}
+.rlink{color:var(--mu);font-size:.6rem;font-family:'DM Mono',monospace;text-decoration:none;border:1px solid var(--bd);padding:1px 5px;border-radius:3px;transition:all .15s}
+.rlink:hover{border-color:var(--ac);color:var(--ac)}
+.divider{height:1px;background:var(--bd);margin:0 15px}
+.studio{padding:13px 15px;flex:1}
+.pill{background:rgba(232,255,74,.07);border:1px solid rgba(232,255,74,.2);border-radius:6px;padding:6px 10px;font-size:.73rem;color:var(--ac);font-style:italic;display:none;margin-bottom:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pill.on{display:block}
+.arow{display:flex;gap:7px;margin-bottom:11px}
+.tsel{flex:1;background:var(--s1);border:1px solid var(--bd);color:var(--tx);padding:9px 26px 9px 11px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.78rem;appearance:none;cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 24 24' fill='none' stroke='%23555' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 9px center}
+.tsel:focus{outline:none;border-color:var(--ac)}
+.gbtn{background:var(--ac);color:#0a0a0a;border:none;padding:9px 15px;border-radius:8px;font-family:'Bebas Neue',sans-serif;font-size:.95rem;letter-spacing:.08em;cursor:pointer;transition:all .2s;white-space:nowrap}
+.gbtn:hover{background:#f5ff80;transform:translateY(-1px)}
+.gbtn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.opts{display:none;flex-direction:column;gap:7px;margin-bottom:11px}
+.opts.on{display:flex}
+.opt{background:var(--s1);border:1px solid var(--bd);border-radius:9px;padding:10px 12px;cursor:pointer;transition:all .18s;font-size:.83rem;line-height:1.43;color:var(--tx);text-align:left}
+.opt:hover{border-color:var(--ac);background:var(--s2)}
+.optlbl{font-family:'DM Mono',monospace;font-size:.5rem;letter-spacing:.1em;text-transform:uppercase;color:var(--m2);margin-bottom:5px;display:flex;align-items:center;gap:5px}
+.tbox{background:var(--s1);border:1px solid var(--bd);border-radius:11px;padding:12px 14px;margin-bottom:11px;transition:border-color .2s}
+.tbox:focus-within{border-color:var(--xb)}
+.ta{width:100%;background:none;border:none;color:var(--tx);font-family:'DM Sans',sans-serif;font-size:.93rem;line-height:1.5;resize:none;min-height:88px;max-height:180px}
+.ta:focus{outline:none}
+.ta::placeholder{color:var(--mu)}
+.tfoot{display:flex;align-items:center;justify-content:space-between;margin-top:9px;padding-top:9px;border-top:1px solid var(--bd)}
+.cc{font-family:'DM Mono',monospace;font-size:.66rem;color:var(--m2)}
+.cc.w{color:#f5a623}.cc.d{color:var(--red)}
+.ttools{display:flex;gap:7px}
+.tbtn{background:none;border:1px solid var(--bd);color:var(--m2);padding:4px 9px;border-radius:5px;font-size:.65rem;font-family:'DM Mono',monospace;cursor:pointer;transition:all .2s}
+.tbtn:hover{border-color:var(--tx);color:var(--tx)}
+.pbtn{width:100%;background:#000;border:2px solid var(--xb);color:#fff;padding:14px;border-radius:9px;font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:.1em;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:9px}
+.pbtn:hover{background:var(--xb);transform:translateY(-2px);box-shadow:0 8px 22px rgba(29,155,240,.3)}
+.pbtn:disabled{opacity:.3;cursor:not-allowed;transform:none;box-shadow:none}
+.wave{display:flex;align-items:center;gap:4px;padding:20px;justify-content:center}
+.wb{width:3px;height:18px;background:var(--ac);border-radius:2px;animation:wv 1s ease-in-out infinite}
+.wb:nth-child(2){animation-delay:.1s}.wb:nth-child(3){animation-delay:.2s}.wb:nth-child(4){animation-delay:.3s}.wb:nth-child(5){animation-delay:.4s}
+@keyframes wv{0%,100%{transform:scaleY(.35);opacity:.35}50%{transform:scaleY(1);opacity:1}}
+.empty{text-align:center;padding:26px 14px;color:var(--m2);font-size:.78rem;line-height:1.6}
+.empty big{display:block;font-size:1.8rem;margin-bottom:8px}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(90px);background:var(--s2);border:1px solid var(--bd);color:var(--tx);padding:8px 16px;border-radius:7px;font-size:.73rem;font-family:'DM Mono',monospace;z-index:999;transition:transform .3s cubic-bezier(.34,1.56,.64,1);white-space:nowrap}
+.toast.on{transform:translateX(-50%) translateY(0)}
+.toast.ok{border-color:var(--ac);color:var(--ac)}
+@keyframes fu{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:translateY(0)}}
+::-webkit-scrollbar{width:3px}
+::-webkit-scrollbar-thumb{background:var(--bd);border-radius:2px}
+@media(min-width:640px){.layout{flex-direction:row;height:calc(100vh - 104px)}.news-panel{width:44%;border-right:1px solid var(--bd);overflow-y:auto;height:100%}.divider{display:none}.studio{overflow-y:auto;height:100%}}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">Trend<b>.</b>Studio</div>
+  <div class="badge"><div class="dot"></div>LIVE</div>
+</header>
+<div class="tabs">
+  <button class="tab on"  onclick="go('top')">🔥 Top</button>
+  <button class="tab"     onclick="go('technology')">💻 Tech</button>
+  <button class="tab"     onclick="go('business')">📈 Business</button>
+  <button class="tab"     onclick="go('entertainment')">🎬 Culture</button>
+  <button class="tab"     onclick="go('world')">🌍 World</button>
+  <button class="tab"     onclick="go('health')">🏥 Health</button>
+</div>
+<div class="layout">
+  <div class="news-panel">
+    <div class="ph">
+      <span class="plabel">Today's Stories</span>
+      <button class="rbtn" id="rbtn" onclick="refresh()">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>
+        REFRESH
+      </button>
+    </div>
+    <div class="grid" id="grid"></div>
+  </div>
+  <div class="divider"></div>
+  <div class="studio">
+    <div class="ph"><span class="plabel">Content Studio</span></div>
+    <div class="pill" id="pill"></div>
+    <div class="arow">
+      <select class="tsel" id="tsel">
+        <option value="witty">✨ Witty & Sharp</option>
+        <option value="informative">📊 Informative</option>
+        <option value="hot-take">🔥 Hot Take</option>
+        <option value="question">❓ Thought Provoking</option>
+        <option value="thread">🧵 Thread Opener</option>
+        <option value="breaking">🚨 Breaking Style</option>
+      </select>
+      <button class="gbtn" id="gbtn" onclick="gen()" disabled>GENERATE</button>
+    </div>
+    <div class="opts" id="opts"></div>
+    <div class="tbox">
+      <textarea class="ta" id="ta" placeholder="Select a story then Generate — or write your own…" maxlength="280" oninput="cc()"></textarea>
+      <div class="tfoot">
+        <span class="cc" id="cc">0 / 280</span>
+        <div class="ttools">
+          <button class="tbtn" onclick="tags()">+ TAGS</button>
+          <button class="tbtn" onclick="clear_()">CLEAR</button>
+        </div>
+      </div>
+    </div>
+    <button class="pbtn" id="pbtn" onclick="post()" disabled>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+      OPEN IN X & POST
+    </button>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+const TABS=['top','technology','business','entertainment','world','health'];
+const TLABELS={top:'Top',technology:'Tech',business:'Business',entertainment:'Culture',world:'World',health:'Health'};
+const EMOJIS={witty:'✨',informative:'📊','hot-take':'🔥',question:'❓',thread:'🧵',breaking:'🚨'};
+let tab='top',pick=null,cache={};
+window.onload=load;
+
+function go(t){
+  tab=t;pick=null;
+  document.querySelectorAll('.tab').forEach((el,i)=>el.classList.toggle('on',TABS[i]===t));
+  studio();load();
+}
+function refresh(){cache[tab]=null;load();}
+
+async function load(){
+  const btn=document.getElementById('rbtn'),grid=document.getElementById('grid');
+  btn.classList.add('spin');
+  grid.innerHTML=waves();
+  if(cache[tab]){btn.classList.remove('spin');return draw(cache[tab]);}
+  try{
+    const r=await fetch('/api/news?category='+tab);
+    const d=await r.json();
+    if(!r.ok||d.error)throw new Error(d.error||'Failed');
+    if(!d.articles?.length)throw new Error('No articles returned');
+    cache[tab]=d.articles;
+    draw(d.articles);
+  }catch(e){
+    grid.innerHTML=`<div class="empty"><big>⚡</big>${x(e.message)}</div>`;
+  }
+  btn.classList.remove('spin');
+}
+
+function draw(list){
+  document.getElementById('grid').innerHTML=list.map((a,i)=>`
+    <div class="card${pick===a.title?' on':''}" onclick="sel(${i})" style="animation:fu .25s ease ${i*.05}s both">
+      <div class="cmeta"><span class="ctag">${x(TLABELS[tab]||tab)}</span><span class="cage">${ago(a.publishedAt)}</span></div>
+      <div class="ctitle">${x(a.title)}</div>
+      <div class="csrc">via ${x(a.source)}${a.url?` <a class="rlink" href="${x(a.url)}" target="_blank" onclick="event.stopPropagation()">↗ READ</a>`:''}</div>
+    </div>`).join('');
+}
+
+function sel(i){
+  const list=cache[tab]||[];
+  pick=list[i]?.title||null;
+  draw(list);studio();
+  if(window.innerWidth<640)document.querySelector('.studio').scrollIntoView({behavior:'smooth'});
+}
+
+function studio(){
+  const pill=document.getElementById('pill'),gbtn=document.getElementById('gbtn'),opts=document.getElementById('opts');
+  if(pick){pill.textContent=pick;pill.classList.add('on');gbtn.disabled=false;}
+  else{pill.classList.remove('on');gbtn.disabled=true;}
+  opts.classList.remove('on');opts.innerHTML='';
+  uppost();
+}
+
+async function gen(){
+  if(!pick)return;
+  const tone=document.getElementById('tsel').value;
+  const gbtn=document.getElementById('gbtn'),opts=document.getElementById('opts');
+  gbtn.disabled=true;gbtn.textContent='THINKING…';
+  opts.innerHTML=waves();opts.classList.add('on');
+  try{
+    const r=await fetch('/api/generate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({trend:pick,tone})});
+    const d=await r.json();
+    if(!r.ok||d.error)throw new Error(d.error||'Failed');
+    opts.innerHTML=d.tweets.map((t,i)=>`
+      <div class="opt" onclick="use_(this)">
+        <div class="optlbl">${EMOJIS[tone]||'✦'} Option ${i+1}<span style="margin-left:auto;font-size:.48rem;color:var(--mu)">${t.length}/280</span></div>
+        <div class="tbody">${x(t)}</div>
+      </div>`).join('');
+  }catch(e){
+    opts.innerHTML=`<div style="color:var(--red);font-size:.78rem;padding:9px;font-family:'DM Mono',monospace">${x(e.message)}</div>`;
+  }
+  gbtn.disabled=false;gbtn.textContent='GENERATE';
+}
+
+function use_(el){
+  document.getElementById('ta').value=el.querySelector('.tbody').innerText;
+  cc();document.getElementById('ta').scrollIntoView({behavior:'smooth',block:'center'});
+  toast('✓ Loaded','ok');
+}
+
+function cc(){
+  const n=document.getElementById('ta').value.length,el=document.getElementById('cc');
+  el.textContent=`${n} / 280`;
+  el.className='cc'+(n>260?' d':n>220?' w':'');
+  uppost();
+}
+function uppost(){document.getElementById('pbtn').disabled=!document.getElementById('ta').value.trim();}
+function clear_(){document.getElementById('ta').value='';document.getElementById('opts').classList.remove('on');document.getElementById('opts').innerHTML='';cc();}
+function tags(){
+  if(!pick){toast('Pick a story first');return;}
+  const t=pick.split(' ').filter(w=>w.length>4).map(w=>w.replace(/[^a-zA-Z0-9]/g,'')).filter(w=>w.length>3).slice(0,2).map(w=>'#'+w[0].toUpperCase()+w.slice(1).toLowerCase()).join(' ');
+  const ta=document.getElementById('ta');
+  ta.value=(ta.value.trim()?ta.value.trim()+'\n\n':'')+t;cc();
+}
+function post(){
+  const txt=document.getElementById('ta').value.trim();if(!txt)return;
+  const enc=encodeURIComponent(txt),web=`https://x.com/intent/tweet?text=${enc}`;
+  if(/Android|iPhone|iPad/i.test(navigator.userAgent)){window.location.href=`twitter://post?message=${enc}`;setTimeout(()=>window.open(web,'_blank'),1500);}
+  else window.open(web,'_blank');
+  toast('✓ Opening X…','ok');
+}
+function ago(iso){if(!iso)return'Today';const m=Math.floor((Date.now()-new Date(iso))/60000);if(m<60)return m+'m ago';const h=Math.floor(m/60);if(h<24)return h+'h ago';const d=Math.floor(h/24);return d===1?'Yesterday':d+'d ago';}
+function waves(){return`<div class="wave">${'<div class="wb"></div>'.repeat(5)}</div>`;}
+function x(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function toast(msg,type=''){const el=document.getElementById('toast');el.textContent=msg;el.className=`toast ${type} on`;setTimeout(()=>el.classList.remove('on'),2500);}
+</script>
+</body>
+</html>
